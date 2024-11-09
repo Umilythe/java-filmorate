@@ -52,20 +52,20 @@ public class FilmController {
         throw new NotFoundException("Фильм с id = " + newFilm.getId() + " не найден");
     }
 
-    public void validate(Film film) {
+    private void validate(Film film) {
         if (film.getName() == null || film.getName().isBlank()) {
             log.error("Название фильма не может быть пустым.");
             throw new ValidationException("Название фильма не может быть пустым.");
         }
-        if (film.getDescription().length() > MAX_LENGHT_OF_DESCRIPTION) {
+        if (film.getDescription() == null || film.getDescription().length() > MAX_LENGHT_OF_DESCRIPTION) {
             log.error("Описание фильма не может превышать 200 знаков.");
             throw new ValidationException("Описание фильма не может превышать 200 знаков.");
         }
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
+        if (film.getReleaseDate() == null || film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
             log.error("Слишком ранняя дата релиза.");
             throw new ValidationException("Слишком ранняя дата релиза.");
         }
-        if (film.getDuration() < 0) {
+        if (film.getDuration() == 0 || film.getDuration() < 0) {
             log.error("Продолжительность фильма не может быть отрицательной");
             throw new ValidationException("Продолжительность фильма не может быть отрицательной");
         }

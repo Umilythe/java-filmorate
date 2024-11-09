@@ -60,7 +60,7 @@ public class UserController {
         throw new NotFoundException("Пользователь с id = " + newUser.getId() + " не найден");
     }
 
-    public void validate(User user) {
+    private void validate(User user) {
         if (user.getEmail() == null || user.getEmail().isBlank()) {
             log.error("Email не может быть пустым.");
             throw new ValidationException("Email не может быть пустым.");
@@ -69,11 +69,11 @@ public class UserController {
             log.error("Email должен содержать символ @.");
             throw new ValidationException("Email должен содержать символ @.");
         }
-        if (user.getLogin().isBlank() & user.getLogin().contains(" ")) {
+        if (user.getLogin() == null || user.getLogin().isBlank() || user.getLogin().contains(" ")) {
             log.error("Логин не может быь пустым и содержать пробелы.");
             throw new ValidationException("Логин не может быь пустым и содержать пробелы.");
         }
-        if (user.getBirthday().isAfter(LocalDate.now())) {
+        if (user.getBirthday() == null || user.getBirthday().isAfter(LocalDate.now())) {
             log.error("Этот день еще не наступил.");
             throw new ValidationException("Этот день еще не наступил.");
         }
