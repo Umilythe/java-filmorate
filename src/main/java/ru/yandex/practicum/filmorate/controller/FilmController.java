@@ -23,7 +23,7 @@ public class FilmController {
     @GetMapping
     public Collection<Film> returnAllFilms() {
         log.trace("Список всех фильмов: " + films.values().size());
-      return films.values();
+        return films.values();
     }
 
     @PostMapping
@@ -70,6 +70,7 @@ public class FilmController {
             throw new ValidationException("Продолжительность фильма не может быть отрицательной");
         }
     }
+
     private long getNextId() {
         long currentMaxId = films.keySet()
                 .stream()

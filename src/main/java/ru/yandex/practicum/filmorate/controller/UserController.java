@@ -38,7 +38,7 @@ public class UserController {
 
     @PutMapping
     public User update(@RequestBody User newUser) {
-         if (newUser.getId() == 0) {
+        if (newUser.getId() == 0) {
             throw new ValidationException("Id должен быть указан");
         }
         if (users.containsKey(newUser.getId())) {
@@ -59,6 +59,7 @@ public class UserController {
         log.error("Пользователь с id = " + newUser.getId() + " не найден");
         throw new NotFoundException("Пользователь с id = " + newUser.getId() + " не найден");
     }
+
     public void validate(User user) {
         if (user.getEmail() == null || user.getEmail().isBlank()) {
             log.error("Email не может быть пустым.");
@@ -77,6 +78,7 @@ public class UserController {
             throw new ValidationException("Этот день еще не наступил.");
         }
     }
+
     private long getNextId() {
         long currentMaxId = users.keySet()
                 .stream()
