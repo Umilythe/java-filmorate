@@ -17,7 +17,7 @@ import java.util.Map;
 public class FilmController {
 
     private final Map<Long, Film> films = new HashMap<>();
-    private final static int MAX_LENGHT_OF_DESCRIPTION = 200;
+    private static final int MAX_LENGHT_OF_DESCRIPTION = 200;
     private static final Logger log = LoggerFactory.getLogger(FilmController.class);
 
     @GetMapping
