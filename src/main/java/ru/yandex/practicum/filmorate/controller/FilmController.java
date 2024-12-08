@@ -28,11 +28,11 @@ public class FilmController {
 
     @PutMapping
     public Film update(@RequestBody Film newFilm) {
-       return filmService.update(newFilm);
+        return filmService.update(newFilm);
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public void addLikeToFilm (@PathVariable Long id, @PathVariable Long userId) {
+    public void addLikeToFilm(@PathVariable Long id, @PathVariable Long userId) {
         filmService.addLike(id, userId);
     }
 

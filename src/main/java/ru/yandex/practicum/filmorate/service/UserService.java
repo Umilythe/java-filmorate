@@ -90,7 +90,7 @@ public class UserService {
         log.info("Пользователи с id " + userId + " и " + friendId + " удалили друг друга из друзей.");
     }
 
-    public List<User> getCommonFriends (Long user1Id, Long user2Id) {
+    public List<User> getCommonFriends(Long user1Id, Long user2Id) {
         if (!userStorage.doesUserExist(user1Id)) {
             log.error("Пользователь с id " + user1Id + " не найден.");
             throw new NotFoundException("Пользователь с id " + user1Id + " не найден.");
@@ -105,7 +105,7 @@ public class UserService {
         Set<Long> secondUserFriendsIds = user2.getFriends();
         commonFriendsIds.retainAll(secondUserFriendsIds);
         List<User> commonFriends = new ArrayList<>();
-        for (Long id: commonFriendsIds) {
+        for (Long id : commonFriendsIds) {
             if (userStorage.doesUserExist(id)) {
                 User friend = userStorage.getUserById(id);
                 commonFriends.add(friend);
@@ -114,7 +114,7 @@ public class UserService {
         return commonFriends;
     }
 
-    public List<User> getFriends(Long userId){
+    public List<User> getFriends(Long userId) {
         if (!userStorage.doesUserExist(userId)) {
             log.error("Пользователь с id " + userId + " не найден.");
             throw new NotFoundException("Пользователь с id " + userId + " не найден.");
@@ -122,7 +122,7 @@ public class UserService {
         User user = userStorage.getUserById(userId);
         Set<Long> friendsIds = user.getFriends();
         List<User> friends = new ArrayList<>();
-        for (Long id: friendsIds) {
+        for (Long id : friendsIds) {
             if (userStorage.doesUserExist(id)) {
                 User friend = userStorage.getUserById(id);
                 friends.add(friend);

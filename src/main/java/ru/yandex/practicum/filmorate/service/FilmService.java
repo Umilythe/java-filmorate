@@ -57,7 +57,7 @@ public class FilmService {
         }
     }
 
-    public void addLike(Long filmId, Long userId){
+    public void addLike(Long filmId, Long userId) {
         if (!filmStorage.doesFilmExists(filmId)) {
             log.error("Фильм с id " + filmId + " не найден.");
             throw new NotFoundException("Фильм с id " + filmId + " не найден.");
@@ -70,7 +70,7 @@ public class FilmService {
         film.addLike(userId);
     }
 
-    public void deleteLike(Long filmId, Long userId){
+    public void deleteLike(Long filmId, Long userId) {
         if (!filmStorage.doesFilmExists(filmId)) {
             log.error("Фильм с id " + filmId + " не найден.");
             throw new NotFoundException("Фильм с id " + filmId + " не найден.");
@@ -83,7 +83,7 @@ public class FilmService {
         film.deleteLike(userId);
     }
 
-    public List<Film> getPopularFilms(int count){
+    public List<Film> getPopularFilms(int count) {
         return filmStorage.getTopLikedFilms(count);
     }
 }

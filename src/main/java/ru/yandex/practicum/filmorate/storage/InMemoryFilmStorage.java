@@ -9,7 +9,7 @@ import java.util.*;
 
 @Slf4j
 @Component
-public class InMemoryFilmStorage implements FilmStorage{
+public class InMemoryFilmStorage implements FilmStorage {
 
     private final Map<Long, Film> films = new HashMap<>();
 
@@ -51,18 +51,18 @@ public class InMemoryFilmStorage implements FilmStorage{
         return ++currentMaxId;
     }
 
-   public boolean doesFilmExists(Long filmId){
+    public boolean doesFilmExists(Long filmId) {
         return films.containsKey(filmId);
-   }
+    }
 
-   public Film getFilmById(Long filmId) {
+    public Film getFilmById(Long filmId) {
         return films.get(filmId);
-   }
+    }
 
-   public List<Film> getTopLikedFilms(int count){
+    public List<Film> getTopLikedFilms(int count) {
         return films.values().stream()
                 .sorted(Comparator.comparingInt(Film::getNumberOfLikes).reversed())
                 .limit(count)
                 .toList();
-   }
+    }
 }

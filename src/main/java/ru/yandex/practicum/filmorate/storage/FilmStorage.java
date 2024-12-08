@@ -12,7 +12,8 @@ public interface FilmStorage {
     Film create(Film film);
 
     Film update(Film newFilm);
-   boolean doesFilmExists(Long filmId);
+
+    boolean doesFilmExists(Long filmId);
 
     Film getFilmById(Long filmId);
 
