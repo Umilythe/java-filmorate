@@ -59,14 +59,8 @@ public class UserService {
     }
 
     public void addFriend(Long userId, Long friendId) {
-        if (!userStorage.doesUserExist(userId)) {
-            log.error("Пользователь с id " + userId + " не найден.");
-            throw new NotFoundException("Пользователь с id " + userId + " не найден.");
-        }
-        if (!userStorage.doesUserExist(friendId)) {
-            log.error("Пользователь с id " + friendId + " не найден.");
-            throw new NotFoundException("Пользователь с id " + friendId + " не найден.");
-        }
+        tellIfUserExists(userId);
+        tellIfUserExists(friendId);
         User ourUser = userStorage.getUserById(userId);
         ourUser.addFriend(friendId);
         User friendUser = userStorage.getUserById(friendId);
@@ -75,14 +69,8 @@ public class UserService {
     }
 
     public void deleteFriend(Long userId, Long friendId) {
-        if (!userStorage.doesUserExist(userId)) {
-            log.error("Пользователь с id " + userId + " не найден.");
-            throw new NotFoundException("Пользователь с id " + userId + " не найден.");
-        }
-        if (!userStorage.doesUserExist(friendId)) {
-            log.error("Пользователь с id " + friendId + " не найден.");
-            throw new NotFoundException("Пользователь с id " + friendId + " не найден.");
-        }
+        tellIfUserExists(userId);
+        tellIfUserExists(friendId);
         User ourUser = userStorage.getUserById(userId);
         ourUser.deleteFriend(friendId);
         User friendUser = userStorage.getUserById(friendId);
@@ -91,14 +79,8 @@ public class UserService {
     }
 
     public List<User> getCommonFriends(Long user1Id, Long user2Id) {
-        if (!userStorage.doesUserExist(user1Id)) {
-            log.error("Пользователь с id " + user1Id + " не найден.");
-            throw new NotFoundException("Пользователь с id " + user1Id + " не найден.");
-        }
-        if (!userStorage.doesUserExist(user2Id)) {
-            log.error("Пользователь с id " + user2Id + " не найден.");
-            throw new NotFoundException("Пользователь с id " + user2Id + " не найден.");
-        }
+        tellIfUserExists(user1Id);
+        tellIfUserExists(user2Id);
         User user1 = userStorage.getUserById(user1Id);
         Set<Long> commonFriendsIds = user1.getFriends();
         User user2 = userStorage.getUserById(user2Id);
@@ -115,10 +97,7 @@ public class UserService {
     }
 
     public List<User> getFriends(Long userId) {
-        if (!userStorage.doesUserExist(userId)) {
-            log.error("Пользователь с id " + userId + " не найден.");
-            throw new NotFoundException("Пользователь с id " + userId + " не найден.");
-        }
+        tellIfUserExists(userId);
         User user = userStorage.getUserById(userId);
         Set<Long> friendsIds = user.getFriends();
         List<User> friends = new ArrayList<>();
@@ -129,5 +108,12 @@ public class UserService {
             }
         }
         return friends;
+    }
+
+    private void tellIfUserExists(Long userId) {
+        if (!userStorage.doesUserExist(userId)) {
+            log.error("Пользователь с id " + userId + " не найден.");
+            throw new NotFoundException("Пользователь с id " + userId + " не найден.");
+        }
     }
 }

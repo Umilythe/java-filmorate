@@ -58,32 +58,34 @@ public class FilmService {
     }
 
     public void addLike(Long filmId, Long userId) {
-        if (!filmStorage.doesFilmExists(filmId)) {
-            log.error("Фильм с id " + filmId + " не найден.");
-            throw new NotFoundException("Фильм с id " + filmId + " не найден.");
-        }
-        if (!userStorage.doesUserExist(userId)) {
-            log.error("Пользователь с id " + userId + " не найден.");
-            throw new NotFoundException("Пользователь с id " + userId + " не найден.");
-        }
+        tellIfFilmExists(filmId);
+        tellIfUserExists(userId);
         Film film = filmStorage.getFilmById(filmId);
         film.addLike(userId);
     }
 
     public void deleteLike(Long filmId, Long userId) {
-        if (!filmStorage.doesFilmExists(filmId)) {
-            log.error("Фильм с id " + filmId + " не найден.");
-            throw new NotFoundException("Фильм с id " + filmId + " не найден.");
-        }
-        if (!userStorage.doesUserExist(userId)) {
-            log.error("Пользователь с id " + userId + " не найден.");
-            throw new NotFoundException("Пользователь с id " + userId + " не найден.");
-        }
+        tellIfFilmExists(filmId);
+        tellIfUserExists(userId);
         Film film = filmStorage.getFilmById(filmId);
         film.deleteLike(userId);
     }
 
     public List<Film> getPopularFilms(int count) {
         return filmStorage.getTopLikedFilms(count);
+    }
+
+    private void tellIfFilmExists(Long filmId) {
+        if (!filmStorage.doesFilmExists(filmId)) {
+            log.error("Фильм с id " + filmId + " не найден.");
+            throw new NotFoundException("Фильм с id " + filmId + " не найден.");
+        }
+    }
+
+    private void tellIfUserExists(Long userId) {
+        if (!userStorage.doesUserExist(userId)) {
+            log.error("Пользователь с id " + userId + " не найден.");
+            throw new NotFoundException("Пользователь с id " + userId + " не найден.");
+        }
     }
 }
