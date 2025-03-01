@@ -103,11 +103,11 @@ public class FilmDbStorage implements FilmStorage {
                 "ORDER BY genre_id";
         SqlRowSet userRows = jdbc.queryForRowSet(sql, filmId);
         while (userRows.next()) {
-            int genre_id = userRows.getInt("genre_id");
-            String genre_name = userRows.getString("genre_type");
+            int genreId = userRows.getInt("genre_id");
+            String genreName = userRows.getString("genre_type");
             Genre newGenre = new Genre();
-            newGenre.setId(genre_id);
-            newGenre.setName(genre_name);
+            newGenre.setId(genreId);
+            newGenre.setName(genreName);
             genres.add(newGenre);
         }
         return genres;
