@@ -1,26 +1,30 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.FriendshipStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class UserService {
 
     private final UserStorage userStorage;
+    private final FriendshipStorage friendshipStorage;
 
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage,
+                       FriendshipStorage friendshipStorage) {
+        this.userStorage = userStorage;
+        this.friendshipStorage = friendshipStorage;
+    }
 
     public Collection<User> returnAllUsers() {
         return userStorage.returnAllUsers();
@@ -35,6 +39,7 @@ public class UserService {
         if (newUser.getId() == 0) {
             throw new ValidationException("Id должен быть указан");
         }
+        tellIfUserExists(newUser.getId());
         validate(newUser);
         return userStorage.update(newUser);
     }
@@ -61,53 +66,26 @@ public class UserService {
     public void addFriend(Long userId, Long friendId) {
         tellIfUserExists(userId);
         tellIfUserExists(friendId);
-        User ourUser = userStorage.getUserById(userId);
-        ourUser.addFriend(friendId);
-        User friendUser = userStorage.getUserById(friendId);
-        friendUser.addFriend(userId);
+        friendshipStorage.addFriend(userId, friendId);
         log.info("Пользователи с id " + userId + " и " + friendId + " успешно добавили друг друга в друзья.");
     }
 
     public void deleteFriend(Long userId, Long friendId) {
         tellIfUserExists(userId);
         tellIfUserExists(friendId);
-        User ourUser = userStorage.getUserById(userId);
-        ourUser.deleteFriend(friendId);
-        User friendUser = userStorage.getUserById(friendId);
-        friendUser.deleteFriend(userId);
+        friendshipStorage.deleteFriend(userId, friendId);
         log.info("Пользователи с id " + userId + " и " + friendId + " удалили друг друга из друзей.");
     }
 
     public List<User> getCommonFriends(Long user1Id, Long user2Id) {
         tellIfUserExists(user1Id);
         tellIfUserExists(user2Id);
-        User user1 = userStorage.getUserById(user1Id);
-        Set<Long> commonFriendsIds = user1.getFriends();
-        User user2 = userStorage.getUserById(user2Id);
-        Set<Long> secondUserFriendsIds = user2.getFriends();
-        commonFriendsIds.retainAll(secondUserFriendsIds);
-        List<User> commonFriends = new ArrayList<>();
-        for (Long id : commonFriendsIds) {
-            if (userStorage.doesUserExist(id)) {
-                User friend = userStorage.getUserById(id);
-                commonFriends.add(friend);
-            }
-        }
-        return commonFriends;
+        return userStorage.getCommonFriends(user1Id, user2Id);
     }
 
     public List<User> getFriends(Long userId) {
         tellIfUserExists(userId);
-        User user = userStorage.getUserById(userId);
-        Set<Long> friendsIds = user.getFriends();
-        List<User> friends = new ArrayList<>();
-        for (Long id : friendsIds) {
-            if (userStorage.doesUserExist(id)) {
-                User friend = userStorage.getUserById(id);
-                friends.add(friend);
-            }
-        }
-        return friends;
+        return userStorage.getFriends(userId);
     }
 
     private void tellIfUserExists(Long userId) {
@@ -116,4 +94,5 @@ public class UserService {
             throw new NotFoundException("Пользователь с id " + userId + " не найден.");
         }
     }
+
 }
