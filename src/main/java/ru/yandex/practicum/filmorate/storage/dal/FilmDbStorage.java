@@ -89,8 +89,6 @@ public class FilmDbStorage implements FilmStorage {
                     throw new NotFoundException("Жанра с таким ID " + genre.getId() + " не существует.");
                 }
             }
-        } else {
-            throw new NotFoundException("Список жанров пуст");
         }
     }
 
