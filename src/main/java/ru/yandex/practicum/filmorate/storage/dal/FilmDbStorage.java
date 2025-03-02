@@ -29,6 +29,11 @@ public class FilmDbStorage implements FilmStorage {
         String sql = "SELECT films.*, mpa.mpa_type FROM films "
                 + "JOIN mpa ON films.mpa_id = mpa.mpa_id ";
         List<Film> films = jdbc.query(sql, filmRowMapper);
+        Map<Long, LinkedHashSet<Genre>> allGenres = getGenresForAllFilms();
+        for (Film film : films) {
+            LinkedHashSet<Genre> genresForOneFilm = allGenres.get(film.getId());
+            film.setGenres(genresForOneFilm);
+        }
         return films;
     }
 
@@ -119,13 +124,51 @@ public class FilmDbStorage implements FilmStorage {
                 + "GROUP BY likes.film_id "
                 + "ORDER BY COUNT(likes.film_id) DESC";
         if (count > returnAllFilms().size()) {
-            return jdbc.query(sql, filmRowMapper);
+            List<Film> films = jdbc.query(sql, filmRowMapper);
+            Map<Long, LinkedHashSet<Genre>> allGenres = getGenresForAllFilms();
+            for (Film film : films) {
+                LinkedHashSet<Genre> genresForOneFilm = allGenres.get(film.getId());
+                film.setGenres(genresForOneFilm);
+            }
+            return films;
         }
-        return jdbc.query(sql.concat(" LIMIT ?"), filmRowMapper, count);
+        List<Film> films = jdbc.query(sql.concat(" LIMIT ?"), filmRowMapper, count);
+        Map<Long, LinkedHashSet<Genre>> allGenres = getGenresForAllFilms();
+        for (Film film : films) {
+            LinkedHashSet<Genre> genresForOneFilm = allGenres.get(film.getId());
+            film.setGenres(genresForOneFilm);
+        }
+        return films;
     }
 
     private boolean genreExists(Integer genreId) {
         Integer count = jdbc.queryForObject("SELECT COUNT(*) FROM genre WHERE genre_id = ?", Integer.class, genreId);
         return count > 0;
+    }
+
+    private Map<Long, LinkedHashSet<Genre>> getGenresForAllFilms() {
+        String sql = "SELECT * FROM films_genres "
+                + "JOIN genre ON films_genres.genre_id = genre.genre_id";
+        Map<Long, LinkedHashSet<Genre>> genres = new HashMap<>();
+        SqlRowSet rowSetForGenres = jdbc.queryForRowSet(sql);
+        while (rowSetForGenres.next()) {
+            Long filmId = rowSetForGenres.getLong("film_id");
+            if (genres.containsKey(filmId)) {
+                LinkedHashSet existingGenres = genres.get(filmId);
+                Genre genre1 = new Genre();
+                genre1.setId(rowSetForGenres.getInt("genre_id"));
+                genre1.setName(rowSetForGenres.getString("genre_type"));
+                existingGenres.add(genre1);
+                genres.put(filmId, existingGenres);
+            } else {
+                LinkedHashSet<Genre> genresForFilm = new LinkedHashSet<>();
+                Genre genre = new Genre();
+                genre.setId(rowSetForGenres.getInt("genre_id"));
+                genre.setName(rowSetForGenres.getString("genre_type"));
+                genresForFilm.add(genre);
+                genres.put(filmId, genresForFilm);
+            }
+        }
+        return genres;
     }
 }

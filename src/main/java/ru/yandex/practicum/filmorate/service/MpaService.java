@@ -16,10 +16,14 @@ public class MpaService {
     private final MpaStorage mpaStorage;
 
     public Mpa getMpaById(int mpaId) {
-        return mpaStorage.getMpaById(mpaId);
+        Mpa mpa = mpaStorage.getMpaById(mpaId);
+        log.debug("Рейтинг с id = " + mpaId + " возвращен пользователю.");
+        return mpa;
     }
 
     public Collection<Mpa> getAllMpa() {
-        return mpaStorage.getAllMpa();
+        Collection<Mpa> mpaList = mpaStorage.getAllMpa();
+        log.debug("Возвращен список жанров.");
+        return mpaList;
     }
 }

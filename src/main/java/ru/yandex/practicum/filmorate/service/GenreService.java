@@ -16,18 +16,25 @@ public class GenreService {
     private final GenreStorage genreStorage;
 
     public Genre getGenreById(int id) {
-        return genreStorage.getGenreById(id);
+        Genre genre = genreStorage.getGenreById(id);
+        log.debug("Жанр с id = " + id + " возвращен пользователю.");
+        return genre;
     }
 
     public Collection<Genre> getAllGenres() {
-        return genreStorage.getAllGenres();
+        Collection<Genre> allGenres = genreStorage.getAllGenres();
+        log.debug("Возвращен список жанров.");
+        return allGenres;
     }
 
     public Genre createGenre(Genre genre) {
-        return genreStorage.createGenre(genre);
+        Genre addGenre = genreStorage.createGenre(genre);
+        log.debug("Жанр с id = " + addGenre.getId() + " добавлен");
+        return addGenre;
     }
 
     public void deleteGenreById(int genreId) {
         genreStorage.deleteGenreById(genreId);
+        log.debug("Жанр с id = " + genreId + " удален");
     }
 }
