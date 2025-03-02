@@ -1,0 +1,29 @@
+package ru.yandex.practicum.filmorate.service;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.storage.MpaStorage;
+
+import java.util.Collection;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class MpaService {
+
+    private final MpaStorage mpaStorage;
+
+    public Mpa getMpaById(int mpaId) {
+        Mpa mpa = mpaStorage.getMpaById(mpaId);
+        log.debug("Рейтинг с id = " + mpaId + " возвращен пользователю.");
+        return mpa;
+    }
+
+    public Collection<Mpa> getAllMpa() {
+        Collection<Mpa> mpaList = mpaStorage.getAllMpa();
+        log.debug("Возвращен список жанров.");
+        return mpaList;
+    }
+}

@@ -1,13 +1,13 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.*;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -15,12 +15,24 @@ import java.util.List;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class FilmService {
 
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+    private final LikeStorage likeStorage;
+    private final MpaStorage mpaStorage;
     private static final int MAX_LENGHT_OF_DESCRIPTION = 200;
+
+    @Autowired
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
+                       @Qualifier("userDbStorage") UserStorage userStorage,
+                       @Qualifier("likeDbStorage") LikeStorage likeStorage,
+                       @Qualifier("mpaDbStorage") MpaStorage mpaStorage) {
+        this.filmStorage = filmStorage;
+        this.userStorage = userStorage;
+        this.likeStorage = likeStorage;
+        this.mpaStorage = mpaStorage;
+    }
 
     public Collection<Film> returnAllFilms() {
         return filmStorage.returnAllFilms();
@@ -28,12 +40,18 @@ public class FilmService {
 
     public Film create(Film film) {
         validate(film);
+        if (!mpaStorage.mpaExists(film.getMpa().getId())) {
+            throw new NotFoundException("Рейтинг с ID " + film.getMpa().getId() + " не найден");
+        }
         filmStorage.create(film);
         log.debug("Фильм " + film.getName() + " добавлен.");
         return film;
     }
 
     public Film update(Film newFilm) {
+        if (filmStorage.getFilmById(newFilm.getId()) == null) {
+            throw new ValidationException("Фильм с id " + newFilm.getId() + " не существует");
+        }
         validate(newFilm);
         return filmStorage.update(newFilm);
     }
@@ -60,15 +78,13 @@ public class FilmService {
     public void addLike(Long filmId, Long userId) {
         tellIfFilmExists(filmId);
         tellIfUserExists(userId);
-        Film film = filmStorage.getFilmById(filmId);
-        film.addLike(userId);
+        likeStorage.addLike(filmId, userId);
     }
 
     public void deleteLike(Long filmId, Long userId) {
         tellIfFilmExists(filmId);
         tellIfUserExists(userId);
-        Film film = filmStorage.getFilmById(filmId);
-        film.deleteLike(userId);
+        likeStorage.deleteLike(filmId, userId);
     }
 
     public List<Film> getPopularFilms(int count) {
@@ -87,5 +103,10 @@ public class FilmService {
             log.error("Пользователь с id " + userId + " не найден.");
             throw new NotFoundException("Пользователь с id " + userId + " не найден.");
         }
+    }
+
+
+    public Film returnFilmById(Long filmId) {
+        return filmStorage.getFilmById(filmId);
     }
 }
